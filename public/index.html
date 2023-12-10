@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Animales</title>
+  <style>
+    #form-editar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista de Animales</h1>
+  <ul id="animales"></ul>
+  <form id="form-sumar" action="/sumar-animal" method="POST">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombreSumar" name="nombre">
+    <label for="tipo">Tipo:</label>
+    <input type="text" id="tipoSumar" name="tipo">
+    <label for="edad">Edad:</label>
+    <input type="number" id="edadSumar" name="edad">
+    <button type="submit">Añadir</button>
+  </form>
+
+  <form id="form-editar" action="/editar-animal" method="POST">
+    <input type="hidden" id="idAnimalEditar" name="id-animal">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombreEditar" name="nombre">
+    <label for="tipo">Tipo:</label>
+    <input type="text" id="tipoEditar" name="tipo">
+    <label for="edad">Edad:</label>
+    <input type="number" id="edadEditar" name="edad">
+    <button type="submit">Editar</button>
+  </form>
+  <script src="index.js"></script> 
+</body>
+</html>
