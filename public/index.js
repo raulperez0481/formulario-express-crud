@@ -1,5 +1,8 @@
 const listaAnimales = document.getElementById("animales");
-const formEditar = document.querySelector("#form-editar");
+const form = document.querySelector("#form-sumar");
+
+
+let isEditing = false;
 
 function actualizarListaAnimales(animales) {
   listaAnimales.innerHTML = "";
@@ -39,12 +42,12 @@ async function eliminarAnimal(id) {
 }
 
 function mostrarFormularioEditar(animal) {
-  document.querySelector("#form-sumar").style.display = "none";
-  formEditar.style.display = "block";
-  formEditar.nombre.value = animal.nombre;
-  formEditar.tipo.value = animal.tipo;
-  formEditar.edad.value = animal.edad;
-  formEditar.idAnimalEditar.value = animal.id;
+  isEditing = true;
+  form.nombre.value = animal.nombre;
+  form.tipo.value = animal.tipo;
+  form.edad.value = animal.edad;
+  form.idAnimal.value = animal.id;
+  document.querySelector("button[type='submit']").innerText = "Guardar cambios";  
 }
 
 async function agregarAnimal(event) {
@@ -52,21 +55,50 @@ async function agregarAnimal(event) {
   const nombre = document.getElementById("nombreSumar").value;
   const tipo = document.getElementById("tipoSumar").value;
   const edad = document.getElementById("edadSumar").value;
+  const id = document.getElementById("idAnimal").value;
 
+    //si estoy editando un objeto del array(persona)
+  if (isEditing) {   
+    try {
+      const response = await fetch("/editar-animal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, nombre, tipo, edad }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al editar animal: ${response.statusText}`);
+      }
+  
+      const animales = await response.json();
+      isEditing = false;
+      form.reset();
+      document.querySelector("button[type='submit']").innerText = "Añadir";
+      actualizarListaAnimales(animales);
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  else{
   try {
-    const response = await fetch("/sumar-animal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: null, nombre, tipo, edad }),
-    });
+      const response = await fetch("/sumar-animal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: null, nombre, tipo, edad }),
+      });
 
-    const animales = await response.json();
-    document.querySelector("#form-sumar").reset();
-    actualizarListaAnimales(animales);
-  } catch (error) {
-    console.error("Error al agregar animal:", error);
+      const animales = await response.json();
+      document.querySelector("#form-sumar").reset();
+      actualizarListaAnimales(animales);
+
+    } catch (error) {
+      console.error("Error al agregar animal:", error);
+    }
   }
 }
 
@@ -80,6 +112,6 @@ async function obtenerAnimales() {
   }
 }
 
-document.querySelector("#form-sumar").addEventListener("submit", agregarAnimal);
+form.addEventListener("submit", agregarAnimal);
 
 obtenerAnimales();

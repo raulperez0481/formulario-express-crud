@@ -7,7 +7,7 @@ const animales = [
   { id: 3, nombre: "Charlie", tipo: "Caballo", edad: 8 }
 ];
 
-let idCounter = animales.length + 1;
+let idCounter = animales.length;
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -18,7 +18,8 @@ app.get("/animales", (req, res) => {
 
 app.post("/sumar-animal", (req, res) => {
   const animal = req.body;
-  animal.id = idCounter++;
+  idCounter = idCounter + 1;
+  animal.id = idCounter;
   animales.push(animal);
   res.json(animales);
 });
@@ -35,11 +36,11 @@ app.delete('/adoptar', (req, res) => {
   res.json(animales);
 });
 
-app.put('/editar-animal', (req, res) => {
-  const id = req.query.id;
-  const { nombre, tipo, edad } = req.body;
-
+app.post('/editar-animal', (req, res) => {
+  console.log("entra en editar animal");
+  const { id,nombre, tipo, edad } = req.body;
   const indice = animales.findIndex(animal => animal.id === parseInt(id));
+  console.log(indice);
   if (indice === -1) {
     res.status(404).send(`No se encontró el animal con id ${id}`);
     return;
